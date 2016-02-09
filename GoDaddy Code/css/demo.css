@@ -1,0 +1,145 @@
+
+#zoomify-page{
+  background:white;
+  height:auto;
+  padding:15%;
+  padding-bottom:4%;
+  padding-top:11%;
+  padding-bottom:15%;
+}
+
+#zoomify-page #demoContainer {
+  width:80%;
+  height:500px;
+  margin:auto;
+  border:1px;
+  border-style:solid;
+  border-color:#696969;
+  background:black;
+  float:left;
+  }
+#zoomify-page ul {
+    width: 13%;
+    float: right;
+    overflow: scroll;
+    padding: 25px;
+    border: 1px solid black;
+    display: inline;
+    text-align: center;
+    height:450px;
+    }
+
+#zoomify-page li img {
+    width: 100%;
+}
+
+#zoomify-page h1 {
+    font-size: 40px;
+    margin-top: 1%;
+    font-weight: bold;
+    text-align: center;
+}
+#zoomify-page p{
+  text-align:justify;
+}
+#zoomify-page h1 img {
+    width: 32px;
+    margin-right:10px;
+}
+
+/* RESPONSIFY -------------------------------------------- */
+
+@media only screen 
+and (max-width : 1100px){
+#zoomify-page{
+  padding-top:12%;
+}
+#zoomify-page #demoContainer {
+  width:100%;
+  height:500px;
+  margin:auto;
+  border:1px;
+  border-style:solid;
+  border-color:#696969;
+  background:black;
+  float:none;
+  }
+#zoomify-page ul {
+    width: 100%;
+    float: none;
+    overflow: scroll;
+    padding: 0;
+    border: 1px solid black;
+    display: inline-block;
+    text-align: center;
+    height: auto;
+   
+    margin-top: 20px;
+}
+#zoomify-page li{
+  width: 15%;
+  margin: 2%;
+  display: inline-block;
+}
+
+} /* 11000px end */
+
+@media only screen 
+and (max-width : 950px){
+
+  #zoomify-page{
+   padding-right:10%;
+   padding-left:10%;
+   padding-top: 15%;
+}
+
+  } /* 950px end */
+
+@media only screen 
+and (max-width : 700px){
+  #zoomify-page{
+    padding-top:20%;
+}
+
+  } /* 700px end */
+
+@media only screen 
+and (max-width : 600px){
+  #zoomify-page{
+    padding-top:23%;
+}
+  } /* 600px end */
+
+@media only screen 
+and (max-device-width : 480px) {
+
+#zoomify-page {
+    padding-top: 26%;
+    padding-left: 5%;
+    padding-right: 5%;
+    box-sizing: border-box;
+}
+#zoomify-page li:hover{
+      .hide { display:none !important; }
+   }
+  } /* 320px 480px end */
+@media only screen 
+and (max-device-width : 700px)
+and (orientation: landscape){
+#header{
+  display:none;
+}
+#zoomify-page {
+    padding: 8%;
+}
+#footer{
+  display:none;
+}
+#zoomify-page ul{
+  display:none;
+}
+#wrapper{
+  padding:0;
+}
+
+}
