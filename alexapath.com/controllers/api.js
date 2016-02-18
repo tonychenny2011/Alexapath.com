@@ -11,7 +11,6 @@ var _ = require('lodash');
 //specific requires
 var cheerio;
 var graph;
-var LastFmNode;
 var Github;
 var Twit;
 var stripe;
@@ -133,81 +132,6 @@ exports.getNewYorkTimes = function(req, res, next) {
   });
 };
 
-/**
- * GET /api/lastfm
- * Last.fm API example.
- */
-exports.getLastfm = function(req, res, next) {
-  LastFmNode = require('lastfm').LastFmNode;
-
-  var lastfm = new LastFmNode(secrets.lastfm);
-  async.parallel({
-    artistInfo: function(done) {
-      lastfm.request('artist.getInfo', {
-        artist: 'The Pierces',
-        handlers: {
-          success: function(data) {
-            done(null, data);
-          },
-          error: function(err) {
-            done(err);
-          }
-        }
-      });
-    },
-    artistTopTracks: function(done) {
-      lastfm.request('artist.getTopTracks', {
-        artist: 'The Pierces',
-        handlers: {
-          success: function(data) {
-            var tracks = [];
-            _.each(data.toptracks.track, function(track) {
-              tracks.push(track);
-            });
-            done(null, tracks.slice(0,10));
-          },
-          error: function(err) {
-            done(err);
-          }
-        }
-      });
-    },
-    artistTopAlbums: function(done) {
-      lastfm.request('artist.getTopAlbums', {
-        artist: 'The Pierces',
-        handlers: {
-          success: function(data) {
-            var albums = [];
-            _.each(data.topalbums.album, function(album) {
-              albums.push(album.image.slice(-1)[0]['#text']);
-            });
-            done(null, albums.slice(0, 4));
-          },
-          error: function(err) {
-            done(err);
-          }
-        }
-      });
-    }
-  },
-  function(err, results) {
-    if (err) return next(err.error.message);
-    var artist = {
-      name: results.artistInfo.artist.name,
-      image: results.artistInfo.artist.image.slice(-1)[0]['#text'],
-      tags: results.artistInfo.artist.tags.tag,
-      bio: results.artistInfo.artist.bio.summary,
-      stats: results.artistInfo.artist.stats,
-      similar: results.artistInfo.artist.similar.artist,
-      topAlbums: results.artistTopAlbums,
-      topTracks: results.artistTopTracks
-    };
-    res.render('api/lastfm', {
-      title: 'Last.fm API',
-      artist: artist
-    });
-  });
-};
 
 /**
  * GET /api/twitter
