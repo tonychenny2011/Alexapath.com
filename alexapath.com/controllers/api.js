@@ -105,35 +105,6 @@ exports.getGithub = function(req, res, next) {
 };
 
 /**
- * GET /api/aviary
- * Aviary image processing example.
- */
-exports.getAviary = function(req, res) {
-  res.render('api/aviary', {
-    title: 'Aviary API'
-  });
-};
-
-/**
- * GET /api/nyt
- * New York Times API example.
- */
-exports.getNewYorkTimes = function(req, res, next) {
-  var query = querystring.stringify({ 'api-key': secrets.nyt.key, 'list-name': 'young-adult' });
-  var url = 'http://api.nytimes.com/svc/books/v2/lists?' + query;
-  request.get(url, function(err, reqInner, body) {
-    if (err) return next(err);
-    if (reqInner.statusCode === 403) return next(Error('Missing or Invalid New York Times API Key'));
-    var bestsellers = JSON.parse(body);
-    res.render('api/nyt', {
-      title: 'New York Times API',
-      books: bestsellers.results
-    });
-  });
-};
-
-
-/**
  * GET /api/twitter
  * Twiter API example.
  */
@@ -182,51 +153,6 @@ exports.postTwitter = function(req, res, next) {
     if (err) return next(err);
     req.flash('success', { msg: 'Tweet has been posted.'});
     res.redirect('/api/twitter');
-  });
-};
-
-/**
- * GET /api/steam
- * Steam API example.
- */
-exports.getSteam = function(req, res, next) {
-  var steamId = '76561198040657099';
-  var query = { l: 'english', steamid: steamId, key: secrets.steam.apiKey };
-  async.parallel({
-    playerAchievements: function(done) {
-      query.appid = '49520';
-      var qs = querystring.stringify(query);
-      request.get({ url: 'http://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v0001/?' + qs, json: true }, function(error, req1, body) {
-        if (req1.statusCode === 401) return done(new Error('Missing or Invalid Steam API Key'));
-        done(error, body);
-      });
-    },
-    playerSummaries: function(done) {
-      query.steamids = steamId;
-      var qs = querystring.stringify(query);
-      request.get({ url: 'http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?' + qs, json: true }, function(err, req1, body) {
-        if (req1.statusCode === 401) return done(new Error('Missing or Invalid Steam API Key'));
-        done(err, body);
-      });
-    },
-    ownedGames: function(done) {
-      query.include_appinfo = 1;
-      query.include_played_free_games = 1;
-      var qs = querystring.stringify(query);
-      request.get({ url: 'http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?' + qs, json: true }, function(err, req1, body) {
-        if (req1.statusCode === 401) return done(new Error('Missing or Invalid Steam API Key'));
-        done(err, body);
-      });
-    }
-  },
-  function(err, results) {
-    if (err) return next(err);
-    res.render('api/steam', {
-      title: 'Steam Web API',
-      ownedGames: results.ownedGames.response.games,
-      playerAchievemments: results.playerAchievements.playerstats,
-      playerSummary: results.playerSummaries.response.players[0]
-    });
   });
 };
 
