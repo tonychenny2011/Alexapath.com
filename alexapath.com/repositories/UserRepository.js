@@ -6,17 +6,6 @@ var PSW_RESET_TOKEN_VALID_FOR = 3; //hours
 var ONE_HOUR = 3600000;
 var repo = {};
 
-function getEmailFromGithubProfile(profile) {
-  var email;
-
-  if(profile.emails && profile.emails.length > 0 && profile.emails[0].value)
-    email = profile.emails[0].value;
-  else
-    email = profile.id + '@github.com';
-
-  return email;
-}
-
 function addAvatarToProfile(provider, url, profile) {
   if(!profile.avatars)
     profile.avatars = {};
@@ -202,67 +191,6 @@ repo.createAccFromFacebook = function(accessToken, refreshToken, profile) {
             gender: profile.gender
           };
           addAvatarToProfile('facebook', 'https://graph.facebook.com/' + profileId + '/picture?type=large', user.profile);
-          return user.save();
-        });
-    });
-};
-
-
-/**
- * GitHub
- */
-repo.linkGithubProfile = function(userId, accessToken, tokenSecret, profile) {
-  var profileId = profile.id.toString();
-
-  return db.User.findOne({ where: { githubId: profileId } })
-    .then(function(existingUser) {
-      if (existingUser)
-        throw 'There is already a GitHub account that belongs to you. Sign in with that account or delete it, then link it with your current account.';
-
-      return db.User.findById(userId);
-    })
-    .then(function(user) {
-      user.githubId = profileId;
-      if(!user.tokens) user.tokens = {};
-      if(!user.profile) user.profile = {};
-      user.tokens.github = accessToken;
-      user.profile.name = user.profile.name || profile.displayName;
-      user.profile.location = user.profile.location || profile._json.location;
-      user.profile.website = user.profile.website || profile._json.blog;
-      addAvatarToProfile('github', profile._json.avatar_url, user.profile);
-      user.set('tokens', user.tokens);
-      user.set('profile', user.profile);
-
-      return user.save();
-    });
-};
-
-repo.createAccFromGithub = function(accessToken, tokenSecret, profile) {
-  var profileId = profile.id.toString();
-  var email = getEmailFromGithubProfile(profile);
-
-  if(!profile._json)
-    profile._json = {};
-
-  return db.User.findOne({ where: { githubId: profileId } })
-    .then(function(existingUser) {
-      if (existingUser)
-        return existingUser;
-
-      return db.User.findOne({ where: { email: email } })
-        .then(function(emailUser) {
-          if (emailUser)
-            throw 'There is already an account using this email address. Sign in to that account and link it with GitHub manually from Account Settings.';
-
-          var user = db.User.build({ githubId: profileId });
-          user.email = email;
-          user.tokens = { github: accessToken };
-          user.profile = {
-            name: profile.displayName,
-            location: profile._json.location,
-            website: profile._json.blog
-          };
-          addAvatarToProfile('github', profile._json.avatar_url, user.profile);
           return user.save();
         });
     });

@@ -11,7 +11,6 @@ var _ = require('lodash');
 //specific requires
 var cheerio;
 var graph;
-var Github;
 var Twit;
 var stripe;
 var twilio;
@@ -82,26 +81,6 @@ exports.getScraping = function(req, res, next) {
       links: links
     });
   });
-};
-
-/**
- * GET /api/github
- * GitHub API Example.
- */
-exports.getGithub = function(req, res, next) {
-  Github = require('github-api');
-
-  var token = req.user.tokens.github;
-  var github = new Github({ token: token });
-  var repo = github.getRepo('sahat', 'requirejs-library');
-  repo.show(function(err, repository) {
-    if (err) return next(err);
-    res.render('api/github', {
-      title: 'GitHub API',
-      repo: repository
-    });
-  });
-
 };
 
 /**
