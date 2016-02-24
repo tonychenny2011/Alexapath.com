@@ -6,6 +6,7 @@ var passport = require('passport');
 
 var UserRepo = require('../repositories/UserRepository.js');
 var emailService = require('../services/emailService.js');
+var db = require('../models/sequelize');
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - LOGIN/LOGOUT */
 exports.getLogin = function(req, res) {
@@ -97,18 +98,30 @@ exports.postSignup = function(req, res, next) {
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ACCOUNT */
 exports.getAccount = function(req, res) {
   res.render('account/profile', {
-    title: 'Account Management'
+    title: 'Your Account'
   });
 };
 
 exports.postUpdateProfile = function(req, res) {
   req.assert('email', 'Email is not valid').isEmail();
+  req.assert('email', 'Email cannot be blank').len(1);
+  req.assert('firstname', 'First name cannot be blank').len(1);
+  req.assert('lastname', 'Last name cannot be blank').len(1);
+  req.assert('city', 'City cannot be blank').len(1);
+  req.assert('country', 'Country name cannot be blank').len(1);
+
+  var errors = req.validationErrors();
+
+  if (errors) {
+    req.flash('errors', errors);
+    return res.redirect('/account');
+  }
 
   UserRepo.changeProfileData(req.user.id, req.body)
     .then(function() {
       req.flash('success', { msg: 'Profile information updated.' });
       res.redirect('/account');
-    })
+      })
     .catch(function(err) {
       req.flash('errors', { msg: err });
       res.redirect('/account');
@@ -116,8 +129,10 @@ exports.postUpdateProfile = function(req, res) {
 };
 
 exports.postUpdatePassword = function(req, res) {
-  req.assert('password', 'Password must be at least 4 characters long').len(4);
-  req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
+  req.assert('password', 'Password must be at least 4 characters long')
+    .len(4);
+  req.assert('confirmPassword', 'Passwords do not match')
+    .equals(req.body.password);
 
   var errors = req.validationErrors();
 
@@ -201,11 +216,14 @@ exports.postReset = function(req, res, next) {
         .catch(function(err) { done(err, null); });
     },
     function(user, done) {
-      emailService.sendPasswordChangeNotificationEmail(user.email, function(err) {
-        req.flash('info', {
-          msg: 'Password has been successfully changed. Notification e-mail has been sent to ' + user.email + ' to inform about this fact.'
-        });
-        done(err, 'done');
+      emailService.sendPasswordChangeNotificationEmail(
+          user.email, function(err) {
+            req.flash('info', {
+              msg: 'Password has been successfully changed. ' +
+              'Notification e-mail has been sent to ' +
+              user.email + ' to inform about this fact.'
+            });
+            done(err, 'done');
       });
     }
   ], function(err) {
@@ -253,8 +271,11 @@ exports.postForgot = function(req, res, next) {
         });
     },
     function(token, user, done) {
-      emailService.sendRequestPasswordEmail(user.email, req.headers.host, token, function(err) {
-        req.flash('info', { msg: 'An e-mail has been sent to ' + user.email + ' with further instructions.' });
+      emailService.sendRequestPasswordEmail(
+        user.email, req.headers.host, token, function(err) {
+        req.flash('info', {
+          msg: 'An e-mail has been sent to ' + user.email
+          + ' with further instructions.' });
         done(err, 'done');
       });
     }
@@ -265,8 +286,9 @@ exports.postForgot = function(req, res, next) {
 };
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - SLIDES */
-// Handling main slides page that is shown to user after logging in
+// handling main slides page that is shown to user after logging in
 exports.getSlides = function(req, res) {
+  // if user not logged in reroute to index page
   if (!req.user)
     return res.redirect('/');
 

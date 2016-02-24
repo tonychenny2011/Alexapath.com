@@ -65,13 +65,15 @@ repo.changeProfileData = function(userId, reqBody) {
         return db.User.count({ where: { email: user.email } })
           .then(function(c) {
             if(c > 0)
-              throw 'Cannot change e-mail address, because address ' + user.email + ' already exists';
+              throw 'Cannot change e-mail address, because address ' +
+              user.email + ' already exists';
 
             return user.save();
           });
       }
+
       return user.save();
-    });
+    })
 };
 
 repo.findUserByResetPswToken = function(token) {
@@ -131,8 +133,6 @@ repo.unlinkProviderFromAccount = function(provider, userId) {
       attrInfo[provider + 'Id'] = null;
       attrInfo.tokens = user.tokens || {};
       attrInfo.tokens[provider.toLowerCase()] = null;
-      if(provider === 'twitter')
-        attrInfo.tokens.twitterSecret = null;
 
       return user.updateAttributes(attrInfo);
     });
