@@ -197,52 +197,6 @@ repo.createAccFromFacebook = function(accessToken, refreshToken, profile) {
 };
 
 /**
- * Twitter
- */
-repo.linkTwitterProfile = function(userId, accessToken, tokenSecret, profile) {
-  return db.User.findOne({ where: { twitterId: profile.id.toString() } })
-    .then(function(existingUser) {
-      if (existingUser)
-        throw 'There is already a Twitter account that belongs to you. Sign in with that account or delete it, then link it with your current account.';
-
-      return db.User.findById(userId);
-    })
-    .then(function(user) {
-      user.twitterId = profile.id.toString();
-      if(!user.tokens) user.tokens = {};
-      if(!user.profile) user.profile = {};
-      user.tokens.twitter = accessToken;
-      user.tokens.twitterSecret = tokenSecret;
-      user.profile.name = user.profile.name || profile.displayName;
-      user.profile.location = user.profile.location || profile._json.location;
-      addAvatarToProfile('twitter', profile._json.profile_image_url_https, user.profile);
-      user.set('tokens', user.tokens);
-      user.set('profile', user.profile);
-
-      return user.save();
-    });
-};
-
-repo.createAccFromTwitter = function(accessToken, tokenSecret, profile) {
-  return db.User.findOne({ where: { twitterId: profile.id.toString() } })
-    .then(function(existingUser) {
-      if (existingUser)
-        return existingUser;
-
-      var user = db.User.build({ twitterId: profile.id.toString() });
-      user.email = profile.username + "@twitter.com";
-      user.tokens = { twitter: accessToken, twitterSecret: tokenSecret };
-      user.profile = {
-        name: profile.displayName,
-        location: profile._json.location
-      };
-      addAvatarToProfile('twitter', profile._json.profile_image_url_https, user.profile);
-      return user.save();
-    });
-};
-
-
-/**
  * Google
  */
 repo.linkGoogleProfile = function(userId, accessToken, tokenSecret, profile) {

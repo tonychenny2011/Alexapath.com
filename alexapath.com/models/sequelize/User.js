@@ -64,10 +64,6 @@ module.exports = function(db, DataTypes) {
       type: DataTypes.STRING,
       unique: true
     },
-    twitterId: {
-      type: DataTypes.STRING,
-      unique: true
-    },
     linkedInId: {
       type: DataTypes.STRING,
       unique: true
@@ -174,11 +170,6 @@ module.exports = function(db, DataTypes) {
         name: 'googleIdIndex',
         method: 'BTREE',
         fields: ['googleId']
-      },
-      {
-        name: 'twitterIdIndex',
-        method: 'BTREE',
-        fields: ['twitterId']
       },
       {
         name: 'linkedInIdIndex',
