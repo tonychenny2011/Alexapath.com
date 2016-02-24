@@ -68,10 +68,6 @@ module.exports = function(db, DataTypes) {
       type: DataTypes.STRING,
       unique: true
     },
-    githubId: {
-      type: DataTypes.STRING,
-      unique: true
-    },
     resetPasswordExpires: DataTypes.DATE,
     resetPasswordToken: DataTypes.STRING,
     createdAt: DataTypes.DATE,
@@ -176,11 +172,6 @@ module.exports = function(db, DataTypes) {
         method: 'BTREE',
         fields: ['linkedInId']
       },
-      {
-        name: 'githubIdIndex',
-        method: 'BTREE',
-        fields: ['githubId']
-      }
     ]
   });
 
