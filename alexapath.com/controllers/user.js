@@ -7,7 +7,7 @@ var passport = require('passport');
 var UserRepo = require('../repositories/UserRepository.js');
 var emailService = require('../services/emailService.js');
 
-
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - LOGIN/LOGOUT */
 exports.getLogin = function(req, res) {
   if (req.user)
     return res.redirect('/account');
@@ -48,6 +48,7 @@ exports.logout = function(req, res) {
   res.redirect('/');
 };
 
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -SIGNUPS */
 exports.getSignup = function(req, res) {
   if (req.user) return res.redirect('/');
   res.render('account/signup', {
@@ -58,7 +59,8 @@ exports.getSignup = function(req, res) {
 exports.postSignup = function(req, res, next) {
   req.assert('email', 'Email is not valid').isEmail();
   req.assert('password', 'Password must be at least 4 characters long').len(4);
-  req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
+  req.assert('confirmPassword',
+    'Passwords do not match').equals(req.body.password);
 
   var errors = req.validationErrors();
 
@@ -81,7 +83,8 @@ exports.postSignup = function(req, res, next) {
     .then(function(user) {
       req.logIn(user, function(err) {
         if (err) return next(err);
-        req.flash('success', { msg: 'Your account has been created and you\'ve been logged in.' });
+        req.flash('success', {
+          msg: 'Your account has been created and you\'ve been logged in.' });
         res.redirect('/');
       });
     })
@@ -91,6 +94,7 @@ exports.postSignup = function(req, res, next) {
     });
 };
 
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ACCOUNT */
 exports.getAccount = function(req, res) {
   res.render('account/profile', {
     title: 'Account Management'
@@ -257,5 +261,22 @@ exports.postForgot = function(req, res, next) {
   ], function(err) {
     if (err) return next(err);
     res.redirect('/forgot');
+  });
+};
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - SLIDES */
+// Handling main slides page that is shown to user after logging in
+exports.getSlides = function(req, res) {
+  if (!req.user)
+    return res.redirect('/');
+
+  res.render('account/slides', {
+    title: 'Slides'
+  });
+};
+
+exports.postSlides = function(req, res, next) {
+  res.render('account/slides', {
+    title: 'Slides'
   });
 };
