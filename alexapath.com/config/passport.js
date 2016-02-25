@@ -4,8 +4,6 @@ var passport = require('passport');
 var Promise = require('bluebird');
 var LocalStrategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
-var TwitterStrategy = require('passport-twitter').Strategy;
-var GitHubStrategy = require('passport-github').Strategy;
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
 
@@ -68,48 +66,6 @@ passport.use(new FacebookStrategy(secrets.facebook, function(req, accessToken, r
       });
   } else {
     UserRepo.createAccFromFacebook(accessToken, refreshToken, profile)
-      .then(function(user) { done(null, user); })
-      .catch(function(error) { done(error); });
-  }
-}));
-
-/**
- * Sign in with GitHub.
- */
-passport.use(new GitHubStrategy(secrets.github, function(req, accessToken, refreshToken, profile, done) {
-  if (req.user) {
-    UserRepo.linkGithubProfile(req.user.id, accessToken, refreshToken, profile)
-      .then(function(user) {
-        req.flash('info', { msg: 'GitHub account has been linked.' });
-        done(null, user);
-      })
-      .catch(function(err) {
-        req.flash('errors', { msg: err });
-        done(null, false, { message: err });
-      });
-  } else {
-    UserRepo.createAccFromGithub(accessToken, refreshToken, profile)
-      .then(function(user) { done(null, user); })
-      .catch(function(error) { done(error); });
-  }
-}));
-
-/**
- * Sign in with Twitter.
- */
-passport.use(new TwitterStrategy(secrets.twitter, function(req, accessToken, tokenSecret, profile, done) {
-  if (req.user) {
-    UserRepo.linkTwitterProfile(req.user.id, accessToken, tokenSecret, profile)
-      .then(function(user) {
-        req.flash('info', { msg: 'Twitter account has been linked.' });
-        done(null, user);
-      })
-      .catch(function(err) {
-        req.flash('errors', { msg: err });
-        done(null, false, { message: err });
-      });
-  } else {
-    UserRepo.createAccFromTwitter(accessToken, tokenSecret, profile)
       .then(function(user) { done(null, user); })
       .catch(function(error) { done(error); });
   }

@@ -6,7 +6,6 @@ var passport = require('passport');
 
 var UserRepo = require('../repositories/UserRepository.js');
 var emailService = require('../services/emailService.js');
-var db = require('../models/sequelize');
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - LOGIN/LOGOUT */
 exports.getLogin = function(req, res) {
@@ -282,23 +281,5 @@ exports.postForgot = function(req, res, next) {
   ], function(err) {
     if (err) return next(err);
     res.redirect('/forgot');
-  });
-};
-
-/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - SLIDES */
-// handling main slides page that is shown to user after logging in
-exports.getSlides = function(req, res) {
-  // if user not logged in reroute to index page
-  if (!req.user)
-    return res.redirect('/');
-
-  res.render('account/slides', {
-    title: 'Slides'
-  });
-};
-
-exports.postSlides = function(req, res, next) {
-  res.render('account/slides', {
-    title: 'Slides'
   });
 };

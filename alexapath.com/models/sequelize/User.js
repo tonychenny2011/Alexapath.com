@@ -171,7 +171,7 @@ module.exports = function(db, DataTypes) {
         name: 'linkedInIdIndex',
         method: 'BTREE',
         fields: ['linkedInId']
-      },
+      }
     ]
   });
 
