@@ -10,7 +10,7 @@ var emailService = require('../services/emailService.js');
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - LOGIN/LOGOUT */
 exports.getLogin = function(req, res) {
   if (req.user)
-    return res.redirect('/account');
+    return res.redirect('/slides');
 
   res.render('account/login', {
     title: 'Login'
@@ -28,15 +28,15 @@ exports.postLogin = function(req, res, next) {
     return res.redirect('/login');
   }
 
-  passport.authenticate('local', function(err, user, info) {
+  passport.authenticate('local', function(err, user) {
     if (!user || err) {
-      req.flash('errors', { msg: err || info.message });
+      req.flash('errors', { msg: err || 'Username and password do not match' });
       return res.redirect('/login');
     }
     req.logIn(user, function(loginErr) {
       if (loginErr) return next(loginErr);
       req.flash('success', { msg: 'Success! You are logged in.' });
-      var redirectTo = req.session.returnTo || '/';
+      var redirectTo = req.session.returnTo || '/slides';
       delete req.session.returnTo;
       res.redirect(redirectTo);
     });
@@ -50,7 +50,7 @@ exports.logout = function(req, res) {
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -SIGNUPS */
 exports.getSignup = function(req, res) {
-  if (req.user) return res.redirect('/');
+  if (req.user) return res.redirect('/slides');
   res.render('account/signup', {
     title: 'Create Account'
   });
@@ -59,8 +59,7 @@ exports.getSignup = function(req, res) {
 exports.postSignup = function(req, res, next) {
   req.assert('email', 'Email is not valid').isEmail();
   req.assert('password', 'Password must be at least 4 characters long').len(4);
-  req.assert('confirmPassword',
-    'Passwords do not match').equals(req.body.password);
+  req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
 
   var errors = req.validationErrors();
 
