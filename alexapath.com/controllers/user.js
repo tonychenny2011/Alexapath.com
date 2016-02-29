@@ -84,7 +84,7 @@ exports.postSignup = function(req, res, next) {
         if (err) return next(err);
         req.flash('success', {
           msg: 'Your account has been created and you\'ve been logged in.' });
-        res.redirect('/');
+        res.redirect('/slides');
       });
     })
     .catch(function(err) {

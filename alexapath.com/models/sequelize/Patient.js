@@ -1,6 +1,6 @@
 'use strict';
 
-var config = require('../config/secrets');
+var config = require('../../config/secrets');
 
 module.exports = function(db, DataTypes) {
   var Patient = db.define('Patient', {
@@ -138,8 +138,8 @@ module.exports = function(db, DataTypes) {
       type: DataTypes.STRING,
       unique: false,
       allowNull: true
-    },
-    // Set table name
+    }
+  }, {
     tableName: 'patients',
     timestamps: false
   });
